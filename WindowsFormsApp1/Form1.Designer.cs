@@ -32,6 +32,8 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -39,8 +41,6 @@
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rowToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.columnToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
@@ -73,16 +73,31 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(128, 26);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(128, 26);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
+            // 
+            // infoToolStripMenuItem
+            // 
+            this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showInfoToolStripMenuItem});
+            this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
+            this.infoToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
+            this.infoToolStripMenuItem.Text = "Info";
+            // 
+            // showInfoToolStripMenuItem
+            // 
+            this.showInfoToolStripMenuItem.Name = "showInfoToolStripMenuItem";
+            this.showInfoToolStripMenuItem.Size = new System.Drawing.Size(154, 26);
+            this.showInfoToolStripMenuItem.Text = "ShowInfo";
+            this.showInfoToolStripMenuItem.Click += new System.EventHandler(this.ShowInfoToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -107,12 +122,14 @@
             this.rowToolStripMenuItem.Name = "rowToolStripMenuItem";
             this.rowToolStripMenuItem.Size = new System.Drawing.Size(143, 26);
             this.rowToolStripMenuItem.Text = "Row";
+            this.rowToolStripMenuItem.Click += new System.EventHandler(this.RowToolStripMenuItem_Click);
             // 
             // columnToolStripMenuItem
             // 
             this.columnToolStripMenuItem.Name = "columnToolStripMenuItem";
             this.columnToolStripMenuItem.Size = new System.Drawing.Size(143, 26);
             this.columnToolStripMenuItem.Text = "Column";
+            this.columnToolStripMenuItem.Click += new System.EventHandler(this.ColumnToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
@@ -126,29 +143,16 @@
             // rowToolStripMenuItem1
             // 
             this.rowToolStripMenuItem1.Name = "rowToolStripMenuItem1";
-            this.rowToolStripMenuItem1.Size = new System.Drawing.Size(143, 26);
+            this.rowToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.rowToolStripMenuItem1.Text = "Row";
+            this.rowToolStripMenuItem1.Click += new System.EventHandler(this.RowToolStripMenuItem1_Click);
             // 
             // columnToolStripMenuItem1
             // 
             this.columnToolStripMenuItem1.Name = "columnToolStripMenuItem1";
-            this.columnToolStripMenuItem1.Size = new System.Drawing.Size(143, 26);
+            this.columnToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
             this.columnToolStripMenuItem1.Text = "Column";
-            // 
-            // infoToolStripMenuItem
-            // 
-            this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showInfoToolStripMenuItem});
-            this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
-            this.infoToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
-            this.infoToolStripMenuItem.Text = "Info";
-            // 
-            // showInfoToolStripMenuItem
-            // 
-            this.showInfoToolStripMenuItem.Name = "showInfoToolStripMenuItem";
-            this.showInfoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.showInfoToolStripMenuItem.Text = "ShowInfo";
-            this.showInfoToolStripMenuItem.Click += new System.EventHandler(this.ShowInfoToolStripMenuItem_Click);
+            this.columnToolStripMenuItem1.Click += new System.EventHandler(this.ColumnToolStripMenuItem1_Click);
             // 
             // dataGridView1
             // 
@@ -177,12 +181,15 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Mini-Exel";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

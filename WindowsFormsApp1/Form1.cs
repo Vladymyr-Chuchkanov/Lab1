@@ -14,6 +14,7 @@ namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
+
         private const int M_columns = 10;
         private const int M_rows = 10;
         private const int M_HeaderWidth = 75;
@@ -67,8 +68,8 @@ namespace WindowsFormsApp1
         private void InitializeSingleCell(DataGridViewRow rw, DataGridViewCell cl)
         {
             string CellPosition = "R" + (rw.Index + 1).ToString() + "A" + (cl.ColumnIndex + 1).ToString();
-            cl.Tag = new Cell(cl, CellPosition, "false");
-            cl.Value = "false";
+            cl.Tag = new Cell(cl, CellPosition, "");
+            cl.Value = "";
         }
         private void UpdateCellValues()
         {
@@ -81,7 +82,7 @@ namespace WindowsFormsApp1
             }
         }
         private void UpdateCellValues(DataGridViewCell caster)
-        {
+        {                       
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 foreach (DataGridViewCell cell in row.Cells)
@@ -97,8 +98,16 @@ namespace WindowsFormsApp1
         {
             Parser pars = new Parser();
             Cell cell = (Cell)cell_.Tag;
-            cell_.Value = pars.Result(cell.Expression);
-            
+            cell_.Value = pars.Result(cell,cell.Expression);
+            cell.Value = pars.Result(cell, cell.Expression);
+
+
+            bool check = CellManager.Instance.HasReferenceRecursion(cell,cell.Position);
+            if(check)
+            {
+                MessageBox.Show("recurs in" + cell.Position);
+            }
+
         }
 
         private void DataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -129,9 +138,9 @@ namespace WindowsFormsApp1
             DataGridViewCell dgvCell = cell.Parent;
             if(dgvCell.Value == null)
             {
-                cell.Expression = "false";
-                cell.Value = "false";
-                dgvCell.Value = "false";
+                cell.Expression = "";
+                cell.Value = "";
+                dgvCell.Value = "";
             }
             ClearRemovedRefs(cell);
             UpdateCellExpressions(cell, dgvCell);
@@ -155,7 +164,7 @@ namespace WindowsFormsApp1
         {
             cell.Expression = dgvCell.Value.ToString();
             Parser pars = new Parser();                      
-            dgvCell.Value = pars.Result(cell.Expression).ToString();
+            dgvCell.Value = pars.Result(cell,cell.Expression).ToString();
             cell.Value = Convert.ToString(dgvCell.Value);
 
 
@@ -236,7 +245,155 @@ namespace WindowsFormsApp1
 
         private void ShowInfoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("ви повинні писати всі операції та значення через пробіл, ви маєте самі слідкувати за тим, що ви пишете, программа не буде нічого вгадувати і дороблювати за вас! операції: + - * / mod div not or and = > <");
+            MessageBox.Show("ви повинні писати всі операції та значення через пробіл, ви маєте самі слідкувати за тим, що ви пишете, программа не буде нічого вгадувати і дороблювати за вас! операції:" + '\n'+" + - * / mod div not or and = > <");
+        }
+        private void AddRow()
+        {
+            dataGridView1.Rows.Add(new DataGridViewRow());
+            FillHeaders();
+            DataGridViewRow addedRow = dataGridView1.Rows[dataGridView1.RowCount - 1];
+            addedRow.DefaultCellStyle.Font = new Font(DefaultFont.Name, DefaultFont.Size, GraphicsUnit.Point);
+            foreach(DataGridViewCell cell in addedRow.Cells)
+            {
+                InitializeSingleCell(addedRow, cell);
+            }
+        }
+        private void AddColumn()
+        {
+            dataGridView1.Columns.Add(new DataGridViewColumn(dataGridView1.Rows[0].Cells[0]));
+            FillHeaders();
+            foreach(DataGridViewRow dgvRow in dataGridView1.Rows)
+            {
+                InitializeSingleCell(dgvRow, dgvRow.Cells[dataGridView1.ColumnCount - 1]);
+            }
+        }
+        private void RowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddRow();
+        }
+        private void ColumnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddColumn();
+        }
+        private void DeleteRow()
+        {
+            if(dataGridView1.RowCount == 1)
+            {
+                MessageBox.Show("ви не можете видалити останній ряд!");
+                return;
+            }
+            if(DeleteRowHasRefs())
+            {
+                MessageBox.Show("спочатку видаліть усі посилання на клітини останнього рядку та взашалі усе звідти!");
+                return;
+            }
+            int lastRow = dataGridView1.RowCount - 1;
+            dataGridView1.Rows.RemoveAt(lastRow);
+        }
+        private bool DeleteRowHasRefs()
+        {
+            List<string> firstArr = new List<string>();
+            
+            int lastRow = dataGridView1.RowCount - 1;
+            foreach(DataGridViewCell dgvCell in dataGridView1.Rows[lastRow].Cells)
+            {
+                Cell cell = (Cell)dgvCell.Tag;
+                firstArr.Add(cell.Position);
+            }
+            return FindDeletedRowsRefs(firstArr, lastRow);
+            
+        }
+        private bool FindDeletedRowsRefs(List<string> arr, int lastRow)
+        {
+            for(int i = 0;i<lastRow;++i)
+            {
+                foreach(DataGridViewCell dgvCell in dataGridView1.Rows[i].Cells)
+                {
+                    Cell cell = (Cell)dgvCell.Tag;
+                    List<Cell> refs = cell.CellRef;
+                    for(int j = refs.Count - 1;j>=0;--j)
+                    {
+                        if(arr.Contains(refs[j].Position))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        private void DeleteColumn()
+        {
+            if (dataGridView1.RowCount == 1)
+            {
+                MessageBox.Show("ви не можете видалити останній ряд!");
+                return;
+            }
+            if (DeleteColHasRefs())
+            {
+                MessageBox.Show("спочатку видаліть усі посилання на клітини останнього рядку та взашалі усе звідти!");
+                return;
+            }
+            int lastCol = dataGridView1.ColumnCount - 1;
+            dataGridView1.Columns.RemoveAt(lastCol);
+        }
+        private bool DeleteColHasRefs()
+        {
+            List<string> firstArr = new List<string>();
+
+            int lastCol = dataGridView1.ColumnCount - 1;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                Cell cell = (Cell)row.Cells[lastCol].Tag;
+                firstArr.Add(cell.Position);
+            }
+            return FindDeletedColsRefs(firstArr, lastCol);
+
+        }
+        private bool FindDeletedColsRefs(List<string> arr, int lastCol)
+        {
+            for (int i = 0; i < lastCol; ++i)
+            {
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    Cell cell = (Cell)row.Cells[i].Tag;
+                    List<Cell> refs = cell.CellRef;
+                    for (int j = refs.Count - 1; j >= 0; --j)
+                    {
+                        if (arr.Contains(refs[j].Position))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        private void RowToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            DeleteRow();
+        }
+
+        private void ColumnToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            DeleteColumn();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DialogResult res = MessageBox.Show("а зберегти!?","Стій!", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            if(res == DialogResult.Yes)
+            {
+                if(!SaveDataGridView(currentPath_,""))
+                {
+                    e.Cancel = true;
+                }
+            }
+            else if(res == DialogResult.Cancel)
+            {
+                e.Cancel = true;
+            }
         }
     }
     class Cell
@@ -272,7 +429,7 @@ namespace WindowsFormsApp1
             parent_ = parent;
             position_ = pos;
             expression_ = exp;
-            value_ = "false";
+            value_ = "";
             CellRef = new List<Cell>();
             CellRef.Add(new Cell());
         }
@@ -328,38 +485,31 @@ namespace WindowsFormsApp1
         }
         public bool HasReferenceRecursion(Cell cell, string invokerPosition)
         {
-            string cellPosition = cell.Position;
-            if(cellPosition.Equals("")||invokerPosition.Equals(CurrentCell.Position))
+            
+            if(cell.CellRef==null)
             {
                 return false;
             }
-            if(cellPosition.Equals(CurrentCell.Position))
+            foreach(Cell cell1 in cell.CellRef)
             {
-                return true;
-            }
-            return HasInnerRecursion(cell, invokerPosition);
-        }
-        private bool HasInnerRecursion(Cell cell,string invokerPosition)
-        {
-            List<Cell> refs = cell.CellRef;
-            for (int i = refs.Count - 1; i>=0;--i)
-            {
-                if(refs[i].Position.Equals(""))
+                if(cell1.Position==invokerPosition)
                 {
-                    return false;
+                    return true;
                 }
-                if(refs[i].Position.Equals(CurrentCell.Position)|| HasReferenceRecursion(refs[i],invokerPosition))
+                if (HasReferenceRecursion(cell1, invokerPosition))
                 {
                     return true;
                 }
             }
             return false;
         }
+       
     }
     
     class Parser
     {
-
+        public List<Cell> CellRef0 = new List<Cell>();
+        
         private int lenght;
         private List<string> RPN_ = new List<string>();
         public string[] Split_(string s)
@@ -393,95 +543,110 @@ namespace WindowsFormsApp1
             }
             return 5;
         }
-        public void Transform_to_RPN(string input)
+        public void Transform_to_RPN(Cell cell_, string input)
         {
+            
             lenght = 0;
             Regex rx_numbers = new Regex(@"[0-9]+");
             Regex rx_cells = new Regex(@"R[0-9]+A[0-9]+");
             Regex rx_opers = new Regex(@"[-,+,/,*,mod,div,or,and,=,>,<]");
             List<string> stack_ = new List<string>();
             int i = 0;
-
-            foreach (string c in Split_(input))
+            try
             {
-                if (rx_numbers.IsMatch(c)&& !rx_cells.IsMatch(c))
+                cell_.CellRef = new List<Cell>();
+                foreach (string c in Split_(input))
                 {
-                    RPN_.Add(c);
-                    ++lenght;
-                }
-                if (rx_cells.IsMatch(c))
-                {
-                    Cell cell = CellManager.Instance.GetCell(c);
-                    
-                    
-                    RPN_.Add(cell.Value);
-                    ++lenght;
-                    
-                }
-                if (c == "not")
-                {
-                    ++i;
-                    stack_.Insert(0, c);
-                }
-
-                if (c == "(")
-                {
-                    ++i;
-                    stack_.Insert(0, c);
-                }
-                if (c == ")")
-                {
-                    while (i != 0 && stack_[0] != "(")
+                    if (rx_numbers.IsMatch(c) && !rx_cells.IsMatch(c))
                     {
-                        RPN_.Add(stack_[0]);
+                        RPN_.Add(c);
                         ++lenght;
-                        stack_.Remove(stack_[0]);
-                        --i;
                     }
-                    stack_.Remove("(");
-                    --i;
-                }
-                if (rx_opers.IsMatch(c)&&c!="not")
-                {
-                    if (i > 0)
+                    if (rx_cells.IsMatch(c))
                     {
-                        while (i > 0 && (stack_[0] == "not" || GetPriority(stack_[0]) <= GetPriority(c)))
+                        Cell cell = CellManager.Instance.GetCell(c);
+                        if (!cell_.CellRef.Contains(cell))
+                        {
+                            cell_.CellRef.Add(cell);
+                            
+                        }
+                       
+                        RPN_.Add(cell.Value);
+                        ++lenght;
+
+                    }
+                    if (c == "not")
+                    {
+                        ++i;
+                        stack_.Insert(0, c);
+                    }
+
+                    if (c == "(")
+                    {
+                        ++i;
+                        stack_.Insert(0, c);
+                    }
+                    if (c == ")")
+                    {
+                        while (i != 0 && stack_[0] != "(")
                         {
                             RPN_.Add(stack_[0]);
                             ++lenght;
                             stack_.Remove(stack_[0]);
                             --i;
                         }
+                        stack_.Remove("(");
+                        --i;
                     }
-                    stack_.Insert(0, c);
-                    ++i;
+                    if (rx_opers.IsMatch(c) && c != "not")
+                    {
+                        if (i > 0)
+                        {
+                            while (i > 0 && (stack_[0] == "not" || GetPriority(stack_[0]) <= GetPriority(c)))
+                            {
+                                RPN_.Add(stack_[0]);
+                                ++lenght;
+                                stack_.Remove(stack_[0]);
+                                --i;
+                            }
+                        }
+                        stack_.Insert(0, c);
+                        ++i;
+                    }
+
                 }
 
+                for (int e = 0; e < i && stack_.Count != 0; e++)
+                {
+                    RPN_.Add(stack_[e]);
+                    ++lenght;
+                }
+                
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("вітаю! у вас помилка!");
+                MessageBox.Show(e.Message);
+                
             }
 
-            for (int e = 0; e < i&&stack_.Count!=0; e++)
-            {
-                RPN_.Add(stack_[e]);
-                ++lenght;
-            }
-            
 
         }
-        public bool Result(string input)
+        public string Result(Cell cell,string input)
         {
-            Transform_to_RPN(input);
+            Transform_to_RPN(cell,input);
             List<string> stack_ = new List<string>();
             Regex rx_opers = new Regex(@"[-,+,/,*,mod,div,or,and,=,>,<,not]");
             int i = 0;
             if(lenght == 0)
             {
-                return false;
+                return "";
             }
             try
             {
                 while (i < lenght)
                 {
-                    if (!rx_opers.IsMatch(RPN_[i])||RPN_[i]=="True"||RPN_[i]=="false")
+                    if (!rx_opers.IsMatch(RPN_[i])||RPN_[i]=="True"||RPN_[i]=="False")
                     {
                         stack_.Insert(0, RPN_[i]);
 
@@ -595,17 +760,17 @@ namespace WindowsFormsApp1
             {
                 MessageBox.Show("вітаю! у вас помилка!");
                 MessageBox.Show(e.Message);
-                return false;
+                return "error!!!!!";
             }
             if (stack_.Count != 0)
             {
                 if (stack_[0] == "0")
                 {
-                    return false;
-                }
-                return Convert.ToBoolean(stack_[0]);
+                    return "";
+                }                                
+                return stack_[0];                               
             }
-            return false;
+            return "";
 
 
         }
