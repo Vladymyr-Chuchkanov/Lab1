@@ -57,7 +57,7 @@
             this.editToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(540, 30);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -67,21 +67,21 @@
             this.saveToolStripMenuItem,
             this.openToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
-            this.fileToolStripMenuItem.Text = "File";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
+            this.fileToolStripMenuItem.Text = "Файл";
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(128, 26);
-            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.saveToolStripMenuItem.Text = "Зберегти";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(128, 26);
-            this.openToolStripMenuItem.Text = "Open";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.openToolStripMenuItem.Text = "Відкрити";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // infoToolStripMenuItem
@@ -89,14 +89,14 @@
             this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showInfoToolStripMenuItem});
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
-            this.infoToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
-            this.infoToolStripMenuItem.Text = "Info";
+            this.infoToolStripMenuItem.Size = new System.Drawing.Size(55, 26);
+            this.infoToolStripMenuItem.Text = "Інфо";
             // 
             // showInfoToolStripMenuItem
             // 
             this.showInfoToolStripMenuItem.Name = "showInfoToolStripMenuItem";
-            this.showInfoToolStripMenuItem.Size = new System.Drawing.Size(154, 26);
-            this.showInfoToolStripMenuItem.Text = "ShowInfo";
+            this.showInfoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.showInfoToolStripMenuItem.Text = "Показати Інфо";
             this.showInfoToolStripMenuItem.Click += new System.EventHandler(this.ShowInfoToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
@@ -105,8 +105,8 @@
             this.addToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
-            this.editToolStripMenuItem.Text = "Edit";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(152, 26);
+            this.editToolStripMenuItem.Text = "Редагувати";
             // 
             // addToolStripMenuItem
             // 
@@ -115,20 +115,20 @@
             this.columnToolStripMenuItem});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.addToolStripMenuItem.Text = "Add";
+            this.addToolStripMenuItem.Text = "Додати";
             // 
             // rowToolStripMenuItem
             // 
             this.rowToolStripMenuItem.Name = "rowToolStripMenuItem";
-            this.rowToolStripMenuItem.Size = new System.Drawing.Size(143, 26);
-            this.rowToolStripMenuItem.Text = "Row";
+            this.rowToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.rowToolStripMenuItem.Text = "Ряд";
             this.rowToolStripMenuItem.Click += new System.EventHandler(this.RowToolStripMenuItem_Click);
             // 
             // columnToolStripMenuItem
             // 
             this.columnToolStripMenuItem.Name = "columnToolStripMenuItem";
-            this.columnToolStripMenuItem.Size = new System.Drawing.Size(143, 26);
-            this.columnToolStripMenuItem.Text = "Column";
+            this.columnToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.columnToolStripMenuItem.Text = "Стовпчик";
             this.columnToolStripMenuItem.Click += new System.EventHandler(this.ColumnToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
@@ -138,31 +138,31 @@
             this.columnToolStripMenuItem1});
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Text = "Видалити";
             // 
             // rowToolStripMenuItem1
             // 
             this.rowToolStripMenuItem1.Name = "rowToolStripMenuItem1";
             this.rowToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
-            this.rowToolStripMenuItem1.Text = "Row";
+            this.rowToolStripMenuItem1.Text = "Ряд";
             this.rowToolStripMenuItem1.Click += new System.EventHandler(this.RowToolStripMenuItem1_Click);
             // 
             // columnToolStripMenuItem1
             // 
             this.columnToolStripMenuItem1.Name = "columnToolStripMenuItem1";
             this.columnToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
-            this.columnToolStripMenuItem1.Text = "Column";
+            this.columnToolStripMenuItem1.Text = "Стовпчик";
             this.columnToolStripMenuItem1.Click += new System.EventHandler(this.ColumnToolStripMenuItem1_Click);
             // 
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 28);
+            this.dataGridView1.Location = new System.Drawing.Point(0, 30);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(800, 422);
+            this.dataGridView1.Size = new System.Drawing.Size(540, 296);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.DataGridView1_CellBeginEdit);
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellClick);
@@ -183,7 +183,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(540, 326);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;

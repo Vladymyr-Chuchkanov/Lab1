@@ -87,10 +87,10 @@ namespace WindowsFormsApp1
             {
                 foreach (DataGridViewCell cell in row.Cells)
                 {
-                    if (caster != cell)
-                    {
+                    //if (caster != cell)
+                    //{
                         UpdateSingleCellValue(cell);
-                    }
+                    //}
                 }
             }
         }
@@ -105,7 +105,9 @@ namespace WindowsFormsApp1
             bool check = CellManager.Instance.HasReferenceRecursion(cell,cell.Position);
             if(check)
             {
-                MessageBox.Show("recurs in" + cell.Position);
+                cell.Value = "RECURSION!";
+                MessageBox.Show("Рекурсія в " + cell.Position);
+                
             }
 
         }
@@ -245,7 +247,19 @@ namespace WindowsFormsApp1
 
         private void ShowInfoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("ви повинні писати всі операції та значення через пробіл, ви маєте самі слідкувати за тим, що ви пишете, программа не буде нічого вгадувати і дороблювати за вас! операції:" + '\n'+" + - * / mod div not or and = > <");
+            MessageBox.Show("ви повинні писати всі операції та значення через пробіл, ви маєте самі слідкувати за тим, що ви пишете, программа не буде нічого вгадувати і дороблювати за вас! операції:" + '\n'+
+                " +:  5 + 3 = 8" + '\n' 
+                + " -: 5 - 3 = 2 " + '\n' 
+                + "*: 5 * 3 = 15" + '\n' 
+                + " /: 5 / 3 = 1,66666.." + '\n' 
+                + " mod: 5 mod 3 = 2" + '\n' 
+                + " div: 5 div 3 = 0.6666.." 
+                + '\n' + " not: not true = false" + '\n' 
+                + " or: true or false = true" + '\n' 
+                + " and: true and false = true" + '\n' 
+                + " =: 5 = 3  false" + '\n' 
+                + " >: 5 > 3 = true" + '\n'
+                + " <: 5 < 3 = false");
         }
         private void AddRow()
         {
@@ -284,7 +298,7 @@ namespace WindowsFormsApp1
             }
             if(DeleteRowHasRefs())
             {
-                MessageBox.Show("спочатку видаліть усі посилання на клітини останнього рядку та взашалі усе звідти!");
+                MessageBox.Show("спочатку видаліть усі посилання на клітини останнього рядку !");
                 return;
             }
             int lastRow = dataGridView1.RowCount - 1;
@@ -331,7 +345,7 @@ namespace WindowsFormsApp1
             }
             if (DeleteColHasRefs())
             {
-                MessageBox.Show("спочатку видаліть усі посилання на клітини останнього рядку та взашалі усе звідти!");
+                MessageBox.Show("спочатку видаліть усі посилання на клітини останнього рядку!");
                 return;
             }
             int lastCol = dataGridView1.ColumnCount - 1;
@@ -372,7 +386,12 @@ namespace WindowsFormsApp1
 
         private void RowToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            DeleteRow();
+            DialogResult res = MessageBox.Show("ви дійсно хочете видалити рядок?", "Стій!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (res == DialogResult.Yes)
+            {
+                DeleteRow();
+            }
+
         }
 
         private void ColumnToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -548,6 +567,7 @@ namespace WindowsFormsApp1
             
             lenght = 0;
             Regex rx_numbers = new Regex(@"[0-9]+");
+            Regex rx_neg_numbers = new Regex(@"-[0-9]+");
             Regex rx_cells = new Regex(@"R[0-9]+A[0-9]+");
             Regex rx_opers = new Regex(@"[-,+,/,*,mod,div,or,and,=,>,<]");
             List<string> stack_ = new List<string>();
@@ -557,22 +577,53 @@ namespace WindowsFormsApp1
                 cell_.CellRef = new List<Cell>();
                 foreach (string c in Split_(input))
                 {
-                    if (rx_numbers.IsMatch(c) && !rx_cells.IsMatch(c))
+                    if (rx_numbers.IsMatch(c) && !rx_cells.IsMatch(c)&& !rx_neg_numbers.IsMatch(c))
                     {
                         RPN_.Add(c);
                         ++lenght;
+                    }
+                    if(rx_neg_numbers.IsMatch(c))
+                    {
+                        string c1 = "";
+                        foreach(char b in c)
+                        {
+                            if(b != '-')
+                            {
+                                c1 += b;
+                            }
+                        }
+                        RPN_.Add("0");
+                        RPN_.Add(c1);
+                        RPN_.Add("-");
+                        lenght += 3;
                     }
                     if (rx_cells.IsMatch(c))
                     {
                         Cell cell = CellManager.Instance.GetCell(c);
                         if (!cell_.CellRef.Contains(cell))
                         {
-                            cell_.CellRef.Add(cell);
-                            
+                            cell_.CellRef.Add(cell);                            
                         }
-                       
-                        RPN_.Add(cell.Value);
-                        ++lenght;
+                        string c1 = "";
+                        if (rx_neg_numbers.IsMatch(cell.Value))
+                        {
+                            foreach (char b in cell.Value)
+                            {
+                                if (b != '-')
+                                {
+                                    c1 += b;
+                                }
+                            }
+                            RPN_.Add("0");
+                            RPN_.Add(c1);
+                            RPN_.Add("-");
+                            lenght += 3;
+                        }
+                        else
+                        {
+                            RPN_.Add(cell.Value);
+                            ++lenght;
+                        }
 
                     }
                     if (c == "not")
@@ -637,6 +688,7 @@ namespace WindowsFormsApp1
             Transform_to_RPN(cell,input);
             List<string> stack_ = new List<string>();
             Regex rx_opers = new Regex(@"[-,+,/,*,mod,div,or,and,=,>,<,not]");
+            Regex rx_fl = new Regex(@"[0-9]+,[0-9]+");
             int i = 0;
             if(lenght == 0)
             {
@@ -651,79 +703,82 @@ namespace WindowsFormsApp1
                         stack_.Insert(0, RPN_[i]);
 
                     }
-
+                    if(rx_fl.IsMatch(RPN_[i]))
+                    {
+                        stack_.Insert(0, RPN_[i]);
+                    }
                     if (rx_opers.IsMatch(RPN_[i]))
                     {
-                        long result;
+                        double result;
                         bool result0;
                         if (RPN_[i] == "+")
                         {
-                            long b = Convert.ToInt64(stack_[0]);
-                            long a = Convert.ToInt64(stack_[1]);
+                            double b = Convert.ToDouble(stack_[0]);
+                            double a = Convert.ToDouble(stack_[1]);
                             stack_.RemoveRange(0, 2);
                             result = a + b;
                             stack_.Insert(0, result.ToString());
                         }
                         if (RPN_[i] == "-")
                         {
-                            long b = Convert.ToInt64(stack_[0]);
-                            long a = Convert.ToInt64(stack_[1]);
+                            double b = Convert.ToDouble(stack_[0]);
+                            double a = Convert.ToDouble(stack_[1]);
                             stack_.RemoveRange(0, 2);
                             result = a - b;
                             stack_.Insert(0, result.ToString());
                         }
                         if (RPN_[i] == "*")
                         {
-                            long b = Convert.ToInt64(stack_[0]);
-                            long a = Convert.ToInt64(stack_[1]);
+                            double b = Convert.ToDouble(stack_[0]);
+                            double a = Convert.ToDouble(stack_[1]);
                             stack_.RemoveRange(0, 2);
                             result = a * b;
                             stack_.Insert(0, result.ToString());
                         }
                         if (RPN_[i] == "/")
                         {
-                            long b = Convert.ToInt64(stack_[0]);
-                            long a = Convert.ToInt64(stack_[1]);
+                            double b = Convert.ToDouble(stack_[0]);
+                            double a = Convert.ToDouble(stack_[1]);
                             stack_.RemoveRange(0, 2);
                             result = a / b;
                             stack_.Insert(0, result.ToString());
                         }
                         if (RPN_[i] == "mod")
                         {
-                            long b = Convert.ToInt64(stack_[0]);
-                            long a = Convert.ToInt64(stack_[1]);
+                            double b = Convert.ToDouble(stack_[0]);
+                            double a = Convert.ToDouble(stack_[1]);
                             stack_.RemoveRange(0, 2);
                             result = a % b;
                             stack_.Insert(0, result.ToString());
                         }
                         if (RPN_[i] == "div")
                         {
-                            long b = Convert.ToInt64(stack_[0]);
-                            long a = Convert.ToInt64(stack_[1]);
+                            double b = Convert.ToDouble(stack_[0]);
+                            double a = Convert.ToDouble(stack_[1]);
                             stack_.RemoveRange(0, 2);
-                            result = a / b - a % b;
+                            result = a / b - (a - (a%b))/b;
                             stack_.Insert(0, result.ToString());
                         }
                         if (RPN_[i] == ">")
                         {
-                            long b = Convert.ToInt64(stack_[0]);
-                            long a = Convert.ToInt64(stack_[1]);
+                            double b = Convert.ToDouble(stack_[0]);
+                            double a = Convert.ToDouble(stack_[1]);
                             stack_.RemoveRange(0, 2);
                             result0 = a > b;
                             stack_.Insert(0, result0.ToString());
                         }
                         if (RPN_[i] == "<")
                         {
-                            long b = Convert.ToInt64(stack_[0]);
-                            long a = Convert.ToInt64(stack_[1]);
+                            double b = Convert.ToDouble(stack_[0]);
+                            double a = Convert.ToDouble(stack_[1]);
                             stack_.RemoveRange(0, 2);
                             result0 = a < b;
                             stack_.Insert(0, result0.ToString());
                         }
                         if (RPN_[i] == "=")
                         {
-                            long b = Convert.ToInt64(stack_[0]);
-                            long a = Convert.ToInt64(stack_[1]);
+                            double b = Convert.ToDouble(stack_[0]);
+                            double a = Convert.ToDouble(stack_[1]);
                             stack_.RemoveRange(0, 2);
                             result0 = a == b;
                             stack_.Insert(0, result0.ToString());
@@ -764,10 +819,7 @@ namespace WindowsFormsApp1
             }
             if (stack_.Count != 0)
             {
-                if (stack_[0] == "0")
-                {
-                    return "";
-                }                                
+                                              
                 return stack_[0];                               
             }
             return "";
