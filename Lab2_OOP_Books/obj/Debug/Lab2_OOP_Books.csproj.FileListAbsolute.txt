@@ -1,0 +1,10 @@
+C:\Users\Володя\Desktop\Labs2\Lab2_OOP_Books\bin\Debug\Lab2_OOP_Books.exe.config
+C:\Users\Володя\Desktop\Labs2\Lab2_OOP_Books\bin\Debug\Lab2_OOP_Books.exe
+C:\Users\Володя\Desktop\Labs2\Lab2_OOP_Books\bin\Debug\Lab2_OOP_Books.pdb
+C:\Users\Володя\Desktop\Labs2\Lab2_OOP_Books\obj\Debug\Lab2_OOP_Books.csprojAssemblyReference.cache
+C:\Users\Володя\Desktop\Labs2\Lab2_OOP_Books\obj\Debug\Lab2_OOP_Books.Form1.resources
+C:\Users\Володя\Desktop\Labs2\Lab2_OOP_Books\obj\Debug\Lab2_OOP_Books.Properties.Resources.resources
+C:\Users\Володя\Desktop\Labs2\Lab2_OOP_Books\obj\Debug\Lab2_OOP_Books.csproj.GenerateResource.cache
+C:\Users\Володя\Desktop\Labs2\Lab2_OOP_Books\obj\Debug\Lab2_OOP_Books.csproj.CoreCompileInputs.cache
+C:\Users\Володя\Desktop\Labs2\Lab2_OOP_Books\obj\Debug\Lab2_OOP_Books.exe
+C:\Users\Володя\Desktop\Labs2\Lab2_OOP_Books\obj\Debug\Lab2_OOP_Books.pdb
