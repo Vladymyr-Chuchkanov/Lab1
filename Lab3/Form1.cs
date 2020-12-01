@@ -13,45 +13,48 @@ using System.Windows.Forms;
 namespace Lab3
 {
     public partial class Form1 : Form
-    {        
+    {
         public Form1()
         {
             InitializeComponent();
+            this.WindowState = FormWindowState.Maximized;
+            this.Width = Screen.PrimaryScreen.WorkingArea.Width;
+            this.Height = Screen.PrimaryScreen.WorkingArea.Height;
             LeftCombo.Items.Add("C:\\");
             RightCombo.Items.Add("C:\\");
             label1.Text = "";
             label2.Text = "";
-            
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
-        {}
+        { }
         private void LeftCombo_SelectedValueChanged(object sender, EventArgs e)
         {
-            LoadAll("C:\\", LeftFiles, LeftDirs,label1);
+            LoadAll("C:\\", LeftFiles, LeftDirs, label1);
         }
         private void RightCombo_SelectedValueChanged(object sender, EventArgs e)
         {
-            LoadAll("C:\\", RightFiles, RightDirs,label2);
+            LoadAll("C:\\", RightFiles, RightDirs, label2);
         }
         private void LeftDirs_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            GetReadyToNextAction(label1,LeftDirs,LeftFiles);
-            LoadAll(label1.Text,LeftFiles,LeftDirs,label1);
+            GetReadyToNextAction(label1, LeftDirs, LeftFiles);
+            LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
         }
         private void RightDirs_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            GetReadyToNextAction(label2,RightDirs,RightFiles);
+            GetReadyToNextAction(label2, RightDirs, RightFiles);
             LoadAll(label2.Text, RightFiles, RightDirs, label2);
         }
         private void LeftFiles_MouseClick(object sender, MouseEventArgs e)
         {
-            GetReadyToNextAction(label1,LeftDirs,LeftFiles);
+            GetReadyToNextAction(label1, LeftDirs, LeftFiles);
             LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
         }
         private void RightFiles_MouseClick(object sender, MouseEventArgs e)
         {
-            GetReadyToNextAction(label2,RightDirs,RightFiles);
+            GetReadyToNextAction(label2, RightDirs, RightFiles);
             LoadAll(label2.Text, RightFiles, RightDirs, label2);
         }
         private void Label1_Click(object sender, EventArgs e)
@@ -62,7 +65,7 @@ namespace Lab3
         private void Label2_Click(object sender, EventArgs e)
         {
             GoUpDir(label2);
-            LoadAll(label2.Text, RightFiles, RightDirs,label2);
+            LoadAll(label2.Text, RightFiles, RightDirs, label2);
         }
         private void SearchHtmlByWords_Click(object sender, EventArgs e)
         {
@@ -70,11 +73,70 @@ namespace Lab3
         }
         private void TransportBtt_Click(object sender, EventArgs e)
         {
-            Transport();            
+            Transport();
         }
         private void ProcesseBtt_Click(object sender, EventArgs e)
         {
             Processe();
+        }
+        
+        
+        private void HelpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "To start work: Select folder " + '\n' +
+                "Open File: Double clik on right/left files" + '\n' +
+                "Open Directory: Double clik on right/left directories" + '\n' +
+                "Move to upper directory: press button above right/left directories" + '\n' +
+                "Open File: Double clik on right/left files" + '\n' + '\n' +
+                "If you want find .html files you can put words(or not) from file you want to box near the button." + '\n' +
+                "files will be searched in current directory" + '\n' + '\n' +
+                "if you want to remove extra spaces, Tabs and same lines from your file: press 'processe' " + '\n' +
+                "if you need not not processed file: check box near button" + '\n' + '\n' +
+                "if you want to transport all files, that are in left files to another place: use 'transport->'"
+                );
+        }
+
+        private void DeleteBttLeft_Click(object sender, EventArgs e)
+        {
+            DeleteFileOrDir(LeftFiles, LeftDirs,label1);
+            LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
+            LoadAll(label2.Text, RightFiles, RightDirs, label2);
+        }
+
+        private void DeleteBttRight_Click(object sender, EventArgs e)
+        {
+            DeleteFileOrDir(RightFiles, RightDirs,label2);
+            LoadAll(label2.Text, RightFiles, RightDirs, label2);
+            LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            CleanSpaces();
+        }
+
+        private void EditLeftBtt_Click(object sender, EventArgs e)
+        {
+            if(LeftDirs.SelectedItem==null&&LeftFiles.SelectedItem==null)
+            {
+                AddFileOrDir(label1);
+            }
+            else
+            {
+                EditName(label1,LeftFiles,LeftDirs);
+            }
+        }        
+        private void EditRightBtt_Click(object sender, EventArgs e)
+        {
+            if (RightDirs.SelectedItem == null && RightFiles.SelectedItem == null)
+            {
+                AddFileOrDir(label2);
+            }
+            else
+            {
+                EditName(label2, RightFiles, RightDirs);
+            }
         }
         public void GoUpDir(Button bt)
         {
@@ -94,25 +156,30 @@ namespace Lab3
         }
         public void LoadAll(string path, ListBox boxFiles, ListBox boxDirs, Button bt)
         {
-            if (Path.GetExtension(path) != "")
+            try
             {
-                Process.Start(path);
-                return;
+                if (Path.GetExtension(path) != "")
+                {
+                    Process.Start(path);
+                    GoUpDir(bt);
+                    return;
+                }
+                boxDirs.Items.Clear();
+                boxFiles.Items.Clear();
+                DirectoryInfo dir = new DirectoryInfo(path);
+                bt.Text = path;
+                DirectoryInfo[] dirs = dir.GetDirectories();
+                foreach (DirectoryInfo crrDir in dirs)
+                {
+                    boxDirs.Items.Add(crrDir);
+                }
+                FileInfo[] files = dir.GetFiles();
+                foreach (FileInfo crrFile in files)
+                {
+                    boxFiles.Items.Add(crrFile);
+                }
             }
-            boxDirs.Items.Clear();
-            boxFiles.Items.Clear();
-            DirectoryInfo dir = new DirectoryInfo(path);
-            bt.Text = path;
-            DirectoryInfo[] dirs = dir.GetDirectories();
-            foreach (DirectoryInfo crrDir in dirs)
-            {
-                boxDirs.Items.Add(crrDir);
-            }
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo crrFile in files)
-            {
-                boxFiles.Items.Add(crrFile);
-            }
+            catch { }
         }
         public void GetReadyToNextAction(Button bt, ListBox boxDirs, ListBox boxFiles)
         {
@@ -122,7 +189,7 @@ namespace Lab3
                 {
                     bt.Text = bt.Text + "\\" + boxDirs.SelectedItem.ToString();
                 }
-                else
+                if (boxFiles.SelectedItem != null)
                 {
                     bt.Text = bt.Text + "\\" + boxFiles.SelectedItem.ToString();
                 }
@@ -187,56 +254,160 @@ namespace Lab3
         public void Transport()
         {
             string DestPath = label2.Text;
-            for (int i = LeftFiles.Items.Count; i > 0; --i)
-            {
-                string FromPath = LeftFiles.Items[i - 1].ToString();
-                FileInfo file = new FileInfo(FromPath);
-
-                if (DestPath != "")
+            if (LeftFiles.SelectedItem == null) {
+                for (int i = LeftFiles.Items.Count; i > 0; --i)
                 {
-                    file.CopyTo(DestPath + "\\" + file.Name);
-                    file.Delete();
-
+                    string FromPath = LeftFiles.Items[i - 1].ToString();
+                    FileInfo file;
+                    if (FromPath.Contains(".html"))
+                    {
+                        file = new FileInfo(FromPath);
+                    }
+                    else
+                    {
+                        file = new FileInfo(label1.Text + "\\" + FromPath);
+                    }
+                    if (DestPath != "")
+                    {
+                        file.CopyTo(DestPath + "\\" + file.Name, true);
+                        file.Delete();
+                    }
+                    else
+                    {
+                        MessageBox.Show("You have not chosen destination!");
+                        return;
+                    }
                 }
-                else
-                {
-                    MessageBox.Show("You have not chosen destination!");
-                    return;
-                }
+                LeftFiles.Items.Clear();
             }
-            LeftFiles.Items.Clear();
+            else if(LeftFiles.SelectedItem != null)
+            {
+                string pas = label1.Text + "\\" + LeftFiles.SelectedItem.ToString();
+                string to = label2.Text+ "\\" + LeftFiles.SelectedItem.ToString();
+                File.Copy(pas, to, true);
+            }           
+            LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
             LoadAll(DestPath, RightFiles, RightDirs, label2);
         }
 
         public void Processe()
         {
-            string FromPath = label1.Text + "\\" + LeftFiles.SelectedItem.ToString();
-            string DestPath = label1.Text + "\\" + "processed" + LeftFiles.SelectedItem.ToString();
-            FileInfo file1 = new FileInfo(FromPath);
-            FileInfo file2 = new FileInfo(DestPath);
-            FilePars pars = new FilePars();
-            pars.ReworkFile(FromPath, DestPath);
-            if (checkDeleteProcesse.Checked)
+            try
             {
-                file1.Delete();
+                string FromPath = label1.Text + "\\" + LeftFiles.SelectedItem.ToString();
+                string DestPath = label1.Text + "\\" + "processed" + LeftFiles.SelectedItem.ToString();
+                FileInfo file1 = new FileInfo(FromPath);
+                FileInfo file2 = new FileInfo(DestPath);
+                FilePars pars = new FilePars();
+                pars.CleanRows(FromPath, DestPath);
+                if (checkDeleteProcesse.Checked)
+                {
+                    file1.Delete();
+                }
+            }
+            catch { }
+            LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
+            LoadAll(label2.Text, RightFiles, RightDirs, label2);
+        }
+        public void DeleteFileOrDir(ListBox boxFiles, ListBox boxDirs, Button label)
+        {
+            string FromPath = "";
+            if (boxDirs.SelectedItem != null)
+            {
+                FromPath = label.Text + "\\" + boxDirs.SelectedItem.ToString();
+                boxDirs.Items.Remove(boxDirs.SelectedItem);
+                DirectoryInfo dir = new DirectoryInfo(FromPath);
+                DialogResult res = MessageBox.Show("Do you want delete directory?", "Warning!", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if (res == DialogResult.Yes) { dir.Delete(); }
+            }
+            if (boxFiles.SelectedItem != null)
+            {
+                FromPath = label.Text + "\\" + boxFiles.SelectedItem.ToString();
+                boxFiles.Items.Remove(boxFiles.SelectedItem);
+                FileInfo file = new FileInfo(FromPath);
+                DialogResult res = MessageBox.Show("Do you want delete file?", "Warning!", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if (res == DialogResult.Yes) { file.Delete(); }
+            }
+            else { return; }
+
+
+        }
+        public void CleanSpaces()
+        {
+            try
+            {
+                string FromPath = label1.Text + "\\" + LeftFiles.SelectedItem.ToString();
+                FileInfo file1 = new FileInfo(FromPath);
+                FilePars pars = new FilePars();
+                pars.CleanSpaces(FromPath);
+            }
+            catch { }
+            LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
+            LoadAll(label2.Text, RightFiles, RightDirs, label2);
+        }
+        public void AddFileOrDir(Button bt)
+        {
+            DialogResult res = MessageBox.Show("Do you want to create new Dir?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (res == DialogResult.No)
+            {
+                DialogResult res1 = MessageBox.Show("Do you want to create new File?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (res1 == DialogResult.No)
+                {
+                    return;
+                }
+                else
+                {
+                    //Form3 frm = new Form3();
+                    //frm.ShowDialog();
+                    //string ext = frm.comboBox1.SelectedItem.ToString();
+                    FileInfo file = new FileInfo(bt.Text + "\\newfile.txt");
+                    //frm.Dispose();
+                    file.Create();
+                }
+            }
+            else if (res == DialogResult.Yes)
+            {
+                DirectoryInfo dir = new DirectoryInfo(bt.Text + "\\newdir");
+                dir.Create();
             }
             LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
+            LoadAll(label2.Text, RightFiles, RightDirs, label2);
         }
-
-        private void HelpToolStripMenuItem_Click(object sender, EventArgs e)
+        public void EditName(Button bt, ListBox boxFiles, ListBox boxDirs)
         {
-            MessageBox.Show(
-                "To start work: Select folder " + '\n' +
-                "Open File: Double clik on right/left files" +'\n'+
-                "Open Directory: Double clik on right/left directories" + '\n'+
-                "Move to upper directory: press button above right/left directories" + '\n' +
-                "Open File: Double clik on right/left files" + '\n' + '\n' +
-                "If you want find .html files you can put words(or not) from file you want to box near the button." + '\n' +
-                "files will be searched in current directory" + '\n' + '\n' +
-                "if you want to remove extra spaces, Tabs and same lines from your file: press 'processe' " + '\n' +
-                "if you need not not processed file: check box near button" + '\n' + '\n' +
-                "if you want to transport all files, that are in left files to another place: use 'transport->'"
-                );
+            Form2 testDialog = new Form2();
+            testDialog.label1.Text = bt.Text;
+            //string name="";
+            testDialog.ShowDialog(this);
+            string name = "";
+
+            if (testDialog.button1.Text == "renamed")
+            {
+                name = testDialog.textBox1.Text;
+            }
+            if (boxDirs.SelectedItem != null)
+            {
+                DirectoryInfo dir = new DirectoryInfo(bt.Text + "\\" + boxDirs.SelectedItem.ToString());
+                try
+                {
+                    dir.MoveTo(bt.Text + "\\" + name);
+                }
+                catch { }
+            }
+            if (boxFiles.SelectedItem != null)
+            {
+                string pathFrom = bt.Text + "\\" + boxFiles.SelectedItem.ToString();
+
+
+                string topath = "";
+                if (bt.Text[bt.Text.Length - 1] == '\\') { topath = bt.Text; }
+                else { topath = bt.Text + "\\"; }
+                File.Move(pathFrom, topath + name);
+
+            }
+            testDialog.Dispose();
+            LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
+            LoadAll(label2.Text, RightFiles, RightDirs, label2);
         }
     }
     public class FilePars
@@ -259,7 +430,7 @@ namespace Lab3
             }
             
         }
-        public void ReworkFile(string path1, string path2)
+        public void CleanRows(string path1, string path2)
         {
             StreamReader sr = new StreamReader(path1);
             StreamWriter sw = new StreamWriter(path2);
@@ -268,24 +439,43 @@ namespace Lab3
             string line;
             while((line = sr.ReadLine())!=null)
             {
-                string[] i = line.Split();                
-                string line0="";
-                foreach(string a in i)
+                
+                if (!lines.Contains(line))
                 {
-                    if (a != "")
-                    {
-                        line0 += a + " ";
-                    }
-                }
-                if (!lines.Contains(line0))
-                {
-                    lines.Add(line0);
+                    lines.Add(line);
                 }
             }
             sr.Dispose();
             foreach(string l in lines)
             {
                 sw.WriteLine(l);
+            }
+            sw.Dispose();
+        }
+        public void CleanSpaces(string path1)
+        {
+            StreamReader sr = new StreamReader(path1);
+            List<string> lines = new List<string>();
+
+            string line;
+            while ((line = sr.ReadLine()) != null)
+            {
+                string line0 = "";
+                string[] x = line.Split();
+                foreach(string i in x)
+                {
+                    if(i!="")
+                    {
+                        line0 += i+" ";
+                    }
+                }
+                lines.Add(line0);
+            }
+            sr.Dispose();
+            StreamWriter sw = new StreamWriter(path1,false);
+            foreach(string i in lines)
+            {
+                sw.WriteLine(i);
             }
             sw.Dispose();
         }

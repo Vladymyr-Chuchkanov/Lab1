@@ -49,6 +49,11 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.DeleteBttLeft = new System.Windows.Forms.Button();
+            this.DeleteBttRight = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.EditLeftBtt = new System.Windows.Forms.Button();
+            this.EditRightBtt = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -161,9 +166,9 @@
             // 
             this.ProcesseBtt.Location = new System.Drawing.Point(15, 713);
             this.ProcesseBtt.Name = "ProcesseBtt";
-            this.ProcesseBtt.Size = new System.Drawing.Size(202, 50);
+            this.ProcesseBtt.Size = new System.Drawing.Size(202, 37);
             this.ProcesseBtt.TabIndex = 13;
-            this.ProcesseBtt.Text = "Processe selected file";
+            this.ProcesseBtt.Text = "Clean Extra Rows";
             this.ProcesseBtt.UseVisualStyleBackColor = true;
             this.ProcesseBtt.Click += new System.EventHandler(this.ProcesseBtt_Click);
             // 
@@ -184,14 +189,14 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1047, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1047, 28);
             this.menuStrip1.TabIndex = 15;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
             this.helpToolStripMenuItem.Text = "Help!";
             this.helpToolStripMenuItem.Click += new System.EventHandler(this.HelpToolStripMenuItem_Click);
             // 
@@ -249,11 +254,66 @@
             this.label8.TabIndex = 21;
             this.label8.Text = "Left directories";
             // 
+            // DeleteBttLeft
+            // 
+            this.DeleteBttLeft.Location = new System.Drawing.Point(384, 54);
+            this.DeleteBttLeft.Name = "DeleteBttLeft";
+            this.DeleteBttLeft.Size = new System.Drawing.Size(108, 23);
+            this.DeleteBttLeft.TabIndex = 22;
+            this.DeleteBttLeft.Text = "Delete Left";
+            this.DeleteBttLeft.UseVisualStyleBackColor = true;
+            this.DeleteBttLeft.Click += new System.EventHandler(this.DeleteBttLeft_Click);
+            // 
+            // DeleteBttRight
+            // 
+            this.DeleteBttRight.Location = new System.Drawing.Point(903, 54);
+            this.DeleteBttRight.Name = "DeleteBttRight";
+            this.DeleteBttRight.Size = new System.Drawing.Size(108, 23);
+            this.DeleteBttRight.TabIndex = 23;
+            this.DeleteBttRight.Text = "Delete Right";
+            this.DeleteBttRight.UseVisualStyleBackColor = true;
+            this.DeleteBttRight.Click += new System.EventHandler(this.DeleteBttRight_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(15, 747);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(202, 41);
+            this.button1.TabIndex = 24;
+            this.button1.Text = "Clean Extra spaces/tab";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            // 
+            // EditLeftBtt
+            // 
+            this.EditLeftBtt.Location = new System.Drawing.Point(288, 54);
+            this.EditLeftBtt.Name = "EditLeftBtt";
+            this.EditLeftBtt.Size = new System.Drawing.Size(90, 23);
+            this.EditLeftBtt.TabIndex = 25;
+            this.EditLeftBtt.Text = "Edit Left";
+            this.EditLeftBtt.UseVisualStyleBackColor = true;
+            this.EditLeftBtt.Click += new System.EventHandler(this.EditLeftBtt_Click);
+            // 
+            // EditRightBtt
+            // 
+            this.EditRightBtt.Location = new System.Drawing.Point(807, 54);
+            this.EditRightBtt.Name = "EditRightBtt";
+            this.EditRightBtt.Size = new System.Drawing.Size(90, 23);
+            this.EditRightBtt.TabIndex = 26;
+            this.EditRightBtt.Text = "Edit Right";
+            this.EditRightBtt.UseVisualStyleBackColor = true;
+            this.EditRightBtt.Click += new System.EventHandler(this.EditRightBtt_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1047, 800);
+            this.Controls.Add(this.EditRightBtt);
+            this.Controls.Add(this.EditLeftBtt);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.DeleteBttRight);
+            this.Controls.Add(this.DeleteBttLeft);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
@@ -308,6 +368,11 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button DeleteBttLeft;
+        private System.Windows.Forms.Button DeleteBttRight;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button EditLeftBtt;
+        private System.Windows.Forms.Button EditRightBtt;
     }
 }
 
