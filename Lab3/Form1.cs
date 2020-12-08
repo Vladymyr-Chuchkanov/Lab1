@@ -88,7 +88,8 @@ namespace Lab3
                 "Open File: Double clik on right/left files" + '\n' +
                 "Open Directory: Double clik on right/left directories" + '\n' +
                 "Move to upper directory: press button above right/left directories" + '\n' +
-                "Open File: Double clik on right/left files" + '\n' + '\n' +
+                "Open File: Double clik on right/left files" + '\n' + 
+                "Create new/rename file: click on edit button(new file or dir when selected no dir or file)" + '\n'+'\n' +
                 "If you want find .html files you can put words(or not) from file you want to box near the button." + '\n' +
                 "files will be searched in current directory" + '\n' + '\n' +
                 "if you want to remove extra spaces, Tabs and same lines from your file: press 'processe' " + '\n' +
@@ -160,8 +161,18 @@ namespace Lab3
             {
                 if (Path.GetExtension(path) != "")
                 {
-                    Process.Start(path);
-                    GoUpDir(bt);
+                    DialogResult res = MessageBox.Show("Open as txt?", "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);                    
+                    if (res == DialogResult.Yes)
+                    {
+                        var p =Process.Start("notepad.exe", path);
+                        p.Kill();
+                    }
+                    else
+                    {
+                        var p =Process.Start( path);
+                        p.Kill();
+                    }                    
+                    GoUpDir(bt);                    
                     return;
                 }
                 boxDirs.Items.Clear();
@@ -254,7 +265,7 @@ namespace Lab3
         public void Transport()
         {
             string DestPath = label2.Text;
-            if (LeftFiles.SelectedItem == null) {
+            if (LeftFiles.SelectedItem == null&&LeftDirs.SelectedItem==null) {
                 for (int i = LeftFiles.Items.Count; i > 0; --i)
                 {
                     string FromPath = LeftFiles.Items[i - 1].ToString();
@@ -285,11 +296,16 @@ namespace Lab3
                 string pas = label1.Text + "\\" + LeftFiles.SelectedItem.ToString();
                 string to = label2.Text+ "\\" + LeftFiles.SelectedItem.ToString();
                 File.Copy(pas, to, true);
-            }           
+            }  
+            else if (LeftDirs.SelectedItem != null)
+            {
+                string pas = label1.Text + "\\" + LeftDirs.SelectedItem.ToString();
+                string to = label2.Text + "\\" + LeftDirs.SelectedItem.ToString();
+                Directory.Move(pas, to);
+            }
             LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
             LoadAll(DestPath, RightFiles, RightDirs, label2);
         }
-
         public void Processe()
         {
             try
@@ -309,6 +325,18 @@ namespace Lab3
             LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
             LoadAll(label2.Text, RightFiles, RightDirs, label2);
         }
+        void DClearDir(DirectoryInfo dir)
+        {
+            foreach(FileInfo file in dir.GetFiles())
+            {
+                file.Delete();
+            }
+            foreach(DirectoryInfo dr in dir.GetDirectories())
+            {
+                DClearDir(dr);
+            }
+            dir.Delete();
+        }
         public void DeleteFileOrDir(ListBox boxFiles, ListBox boxDirs, Button label)
         {
             string FromPath = "";
@@ -318,7 +346,7 @@ namespace Lab3
                 boxDirs.Items.Remove(boxDirs.SelectedItem);
                 DirectoryInfo dir = new DirectoryInfo(FromPath);
                 DialogResult res = MessageBox.Show("Do you want delete directory?", "Warning!", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-                if (res == DialogResult.Yes) { dir.Delete(); }
+                if (res == DialogResult.Yes) { DClearDir(dir); }
             }
             if (boxFiles.SelectedItem != null)
             {
@@ -329,8 +357,6 @@ namespace Lab3
                 if (res == DialogResult.Yes) { file.Delete(); }
             }
             else { return; }
-
-
         }
         public void CleanSpaces()
         {
@@ -357,12 +383,19 @@ namespace Lab3
                 }
                 else
                 {
-                    //Form3 frm = new Form3();
-                    //frm.ShowDialog();
-                    //string ext = frm.comboBox1.SelectedItem.ToString();
-                    FileInfo file = new FileInfo(bt.Text + "\\newfile.txt");
-                    //frm.Dispose();
-                    file.Create();
+                    string path = bt.Text + "\\newfile.txt";                    
+                    FileInfo file = new FileInfo(path);
+                    if(file.Exists)
+                    {
+                        DialogResult res2 = MessageBox.Show("Do you want to replace file with same name?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if(res2 == DialogResult.Yes)
+                        {
+                            file.Delete();
+                            file.Create();
+                        }
+                        else{return;}
+                    }
+                    else { file.Create(); }
                 }
             }
             else if (res == DialogResult.Yes)
@@ -377,7 +410,6 @@ namespace Lab3
         {
             Form2 testDialog = new Form2();
             testDialog.label1.Text = bt.Text;
-            //string name="";
             testDialog.ShowDialog(this);
             string name = "";
 
@@ -388,22 +420,49 @@ namespace Lab3
             if (boxDirs.SelectedItem != null)
             {
                 DirectoryInfo dir = new DirectoryInfo(bt.Text + "\\" + boxDirs.SelectedItem.ToString());
-                try
+                DirectoryInfo dir0 = new DirectoryInfo(bt.Text + "\\" + name);
+                DirectoryInfo dir2 = new DirectoryInfo(bt.Text + "\\" + name);
+                DialogResult res=DialogResult.No;
+                if (boxDirs.Items.ToString().Contains(name))
                 {
-                    dir.MoveTo(bt.Text + "\\" + name);
+                    res = MessageBox.Show("Do you want to replace object with same name?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 }
-                catch { }
+                else { dir.MoveTo(bt.Text + "\\" + name); }
+                if (res == DialogResult.Yes)
+                {
+                    DClearDir(dir2);                    
+                    dir0.Create();
+                    DClearDir(dir);
+                }                
             }
             if (boxFiles.SelectedItem != null)
             {
                 string pathFrom = bt.Text + "\\" + boxFiles.SelectedItem.ToString();
-
-
+                DialogResult res = DialogResult.No;
                 string topath = "";
                 if (bt.Text[bt.Text.Length - 1] == '\\') { topath = bt.Text; }
                 else { topath = bt.Text + "\\"; }
-                File.Move(pathFrom, topath + name);
-
+                DirectoryInfo dir = new DirectoryInfo(bt.Text);
+                int i = 0;
+                foreach(FileInfo f1 in dir.GetFiles())
+                {
+                    if (name == f1.ToString())
+                    {
+                        i = 1;break;
+                    }
+                }
+                if (i==1)
+                {
+                    res = MessageBox.Show("Do you want to replace object with same name?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                }
+                else
+                {
+                    File.Move(pathFrom, topath + name);
+                }
+                if (res == DialogResult.Yes)
+                {                
+                    File.Replace(pathFrom, topath + name,"C:\\1\\0.txt",true);                
+                }                
             }
             testDialog.Dispose();
             LoadAll(label1.Text, LeftFiles, LeftDirs, label1);
@@ -427,19 +486,16 @@ namespace Lab3
             {
                 sr.Dispose();
                 return false;
-            }
-            
+            }            
         }
         public void CleanRows(string path1, string path2)
         {
             StreamReader sr = new StreamReader(path1);
             StreamWriter sw = new StreamWriter(path2);
             List<string> lines = new List<string>();
-
             string line;
             while((line = sr.ReadLine())!=null)
-            {
-                
+            {                
                 if (!lines.Contains(line))
                 {
                     lines.Add(line);
